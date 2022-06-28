@@ -40,9 +40,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
                 #strct
 
                 impl anchor_lang::Discriminator for New {
-                    fn discriminator() -> [u8; 8] {
-                        #sighash_tts
-                    }
+                    const DISCRIMINATOR: [u8; 8] = #sighash_tts;
                 }
                 impl anchor_lang::InstructionData for New {}
             }
@@ -82,9 +80,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
                                 format!("{:?}", sighash_arr).parse().unwrap();
                             quote! {
                                 impl anchor_lang::Discriminator for #ix_name_camel {
-                                    fn discriminator() -> [u8; 8] {
-                                        #sighash_tts
-                                    }
+                                    const DISCRIMINATOR: [u8; 8] = #sighash_tts;
                                 }
                                 impl anchor_lang::InstructionData for #ix_name_camel {}
                             }
@@ -137,9 +133,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
                     format!("{:?}", sighash_arr).parse().unwrap();
                 quote! {
                     impl anchor_lang::Discriminator for #ix_name_camel {
-                        fn discriminator() -> [u8; 8] {
-                            #sighash_tts
-                        }
+                        const DISCRIMINATOR: [u8; 8] = #sighash_tts;
                     }
                     impl anchor_lang::InstructionData for #ix_name_camel {}
                 }

@@ -204,7 +204,10 @@ pub trait EventData: AnchorSerialize + Discriminator {
 
 /// 8 byte unique identifier for a type.
 pub trait Discriminator {
-    fn discriminator() -> [u8; 8];
+    const DISCRIMINATOR: [u8; 8];
+    fn discriminator() -> [u8; 8] {
+        Self::DISCRIMINATOR
+    }
 }
 
 /// Bump seed for program derived addresses.
