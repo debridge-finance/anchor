@@ -114,6 +114,10 @@ pub trait ToAccountMetas {
     fn to_account_metas(&self, is_signer: Option<bool>) -> Vec<AccountMeta>;
 }
 
+pub trait AccountsCount {
+    const ACCOUNTS_COUNT: usize;
+}
+
 /// Transformation to
 /// [`AccountInfo`](../solana_program/account_info/struct.AccountInfo.html)
 /// structs.

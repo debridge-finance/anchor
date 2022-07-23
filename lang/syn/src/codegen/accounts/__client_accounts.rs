@@ -1,7 +1,17 @@
-use crate::{AccountField, AccountsStruct, Ty};
+use crate::{AccountField, AccountsStruct, CompositeField, Ty};
 use heck::SnakeCase;
 use quote::quote;
 use std::str::FromStr;
+
+fn get_symbol_full_path(s: &CompositeField) -> proc_macro2::TokenStream {
+    format!(
+        "__client_accounts_{0}::{1}",
+        s.symbol.to_snake_case(),
+        s.symbol,
+    )
+    .parse()
+    .unwrap()
+}
 
 // Generates the private `__client_accounts` mod implementation, containing
 // a generated struct mapping 1-1 to the `Accounts` struct, except with
@@ -34,13 +44,7 @@ pub fn generate(accs: &AccountsStruct) -> proc_macro2::TokenStream {
                 } else {
                     quote!()
                 };
-                let symbol: proc_macro2::TokenStream = format!(
-                    "__client_accounts_{0}::{1}",
-                    s.symbol.to_snake_case(),
-                    s.symbol,
-                )
-                .parse()
-                .unwrap();
+                let symbol = get_symbol_full_path(s);
                 quote! {
                     #docs
                     pub #name: #symbol
@@ -106,27 +110,20 @@ pub fn generate(accs: &AccountsStruct) -> proc_macro2::TokenStream {
     // accounts used for structs.
     let re_exports: Vec<proc_macro2::TokenStream> = {
         // First, dedup the exports.
-        let mut re_exports = std::collections::HashSet::new();
-        for f in accs.fields.iter().filter_map(|f: &AccountField| match f {
-            AccountField::CompositeField(s) => Some(s),
-            AccountField::Field(_) => None,
-        }) {
-            re_exports.insert(format!(
-                "__client_accounts_{0}::{1}",
-                f.symbol.to_snake_case(),
-                f.symbol,
-            ));
-        }
-
-        re_exports
-            .iter()
-            .map(|symbol: &String| {
-                let symbol: proc_macro2::TokenStream = symbol.parse().unwrap();
-                quote! {
-                    pub use #symbol;
-                }
-            })
-            .collect()
+        std::collections::HashSet::<String>::from_iter(accs.fields.iter().filter_map(
+            |f: &AccountField| match f {
+                AccountField::CompositeField(s) => Some(get_symbol_full_path(s).to_string()),
+                AccountField::Field(_) => None,
+            },
+        ))
+        .into_iter()
+        .map(|symbol| {
+            let symbol: proc_macro2::TokenStream = symbol.parse().unwrap();
+            quote! {
+                pub use #symbol;
+            }
+        })
+        .collect()
     };
 
     let struct_doc = proc_macro2::TokenStream::from_str(&format!(
@@ -134,6 +131,43 @@ pub fn generate(accs: &AccountsStruct) -> proc_macro2::TokenStream {
         name
     ))
     .unwrap();
+
+    let (accounts_count, accounts_from, accounts_name) = accs
+        .fields
+        .iter()
+        .fold((vec![quote! { 0 }], vec![], vec![]), |(mut accounts_count, mut accounts_from, mut accounts_name), f: &AccountField|  {
+             match f {
+                AccountField::CompositeField(s) => {
+                    let name = &s.ident;
+                    let symbol: proc_macro2::TokenStream = get_symbol_full_path(s);
+                    accounts_count.push(quote! {
+                        <#symbol as anchor_lang::AccountsCount>::ACCOUNTS_COUNT
+                    });
+                    accounts_from.push(quote! {
+                        let #name = #symbol::from(
+                            <[Pubkey; <#symbol as anchor_lang::AccountsCount>::ACCOUNTS_COUNT]>::try_from(&pubkeys[current_index..current_index+<#symbol as anchor_lang::AccountsCount>::ACCOUNTS_COUNT]).unwrap()
+                        );
+                        current_index += <#symbol as anchor_lang::AccountsCount>::ACCOUNTS_COUNT;
+                    });
+                    accounts_name.push(quote! {
+                        #name
+                    });
+                }
+                AccountField::Field(f) => {
+                    let name = &f.ident;
+
+                    accounts_count.push(quote! { 1 });
+                    accounts_from.push(quote! {
+                        let #name = pubkeys[current_index];
+                        current_index += 1;
+                    });
+                    accounts_name.push(quote! {
+                        #name
+                    });
+                }
+            };
+            (accounts_count, accounts_from, accounts_name)
+        });
 
     quote! {
         /// An internal, Anchor generated module. This is used (as an
@@ -164,6 +198,24 @@ pub fn generate(accs: &AccountsStruct) -> proc_macro2::TokenStream {
                     #(#account_struct_metas)*
 
                     account_metas
+                }
+            }
+
+            const ACCOUNTS_COUNT: usize = #(#accounts_count)+*;
+
+            #[automatically_derived]
+            impl anchor_lang::AccountsCount for #name {
+                const ACCOUNTS_COUNT: usize = ACCOUNTS_COUNT;
+            }
+
+            #[automatically_derived]
+            impl From<[anchor_lang::solana_program::pubkey::Pubkey; ACCOUNTS_COUNT]> for #name {
+                fn from(mut pubkeys: [anchor_lang::solana_program::pubkey::Pubkey; ACCOUNTS_COUNT]) -> Self {
+                    let mut current_index = 0;
+                    #(#accounts_from)*
+                    Self {
+                        #(#accounts_name),*
+                    }
                 }
             }
         }
