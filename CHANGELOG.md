@@ -13,6 +13,25 @@ The minor version will be incremented upon a breaking change and the patch versi
 ### Features
 
 * lang: Add `Discriminator` and `Owner` trait implementation for structures representing instructions ([#1997](https://github.com/coral-xyz/anchor/pull/1997))
+* client: Add `transaction` functions to RequestBuilder ([#1958](https://github.com/coral-xyz/anchor/pull/1958)).
+* spl: Add `create_metadata_accounts_v3` and `set_collection_size` wrappers ([#2119](https://github.com/coral-xyz/anchor/pull/2119))
+* spl: Add `MetadataAccount` account deserialization. ([#2014](https://github.com/coral-xyz/anchor/pull/2014)).
+* spl: Add `update_primary_sale_happened_via_token` wrapper ([#2173](https://github.com/coral-xyz/anchor/pull/2173)).
+* spl: Add `sign_metadata` and `remove_creator_verification` wrappers ([#2175](https://github.com/coral-xyz/anchor/pull/2175)).
+* lang: Add parsing for consts from impl blocks for IDL PDA seeds generation ([#2128](https://github.com/coral-xyz/anchor/pull/2014))
+* lang: Account closing reassigns to system program and reallocates ([#2169](https://github.com/coral-xyz/anchor/pull/2169)).
+* ts: Add coders for SPL programs ([#2143](https://github.com/coral-xyz/anchor/pull/2143)).
+* ts: Add `has_one` relations inference so accounts mapped via has_one relationships no longer need to be provided ([#2160](https://github.com/coral-xyz/anchor/pull/2160))
+* ts: Add ability to set args after setting accounts and retrieving pubkyes ([#2160](https://github.com/coral-xyz/anchor/pull/2160))
+* ts: Add `.prepare()` to builder pattern ([#2160](https://github.com/coral-xyz/anchor/pull/2160))
+* spl: Add `freeze_delegated_account` and `thaw_delegated_account` wrappers ([#2164](https://github.com/coral-xyz/anchor/pull/2164))
+* ts: Add nested PDA inference ([#2194](https://github.com/coral-xyz/anchor/pull/2194))
+* ts: Add ability to resolve missing accounts with a custom resolver ([#2194](https://github.com/coral-xyz/anchor/pull/2194))
+
+### Fixes
+
+* lang: Fix IDL `seed` generation for byte string literals. ([#2125](https://github.com/coral-xyz/anchor/pull/2125))
+* ts: Update seeds inference to allow nested user defined structs within the seeds ([#2198](https://github.com/coral-xyz/anchor/pull/2198))
 
 ## [0.25.0] - 2022-07-05
 
@@ -30,7 +49,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 * cli: Allow passing arguments to an underlying script with `anchor run` ([#1914](https://github.com/coral-xyz/anchor/pull/1914)).
 * ts: Implement a coder for system program ([#1920](https://github.com/coral-xyz/anchor/pull/1920)).
 * ts: Add `program.coder.types` for encoding/decoding user-defined types ([#1931](https://github.com/coral-xyz/anchor/pull/1931)).
-* client: Add send_with_spinner_and_config function to RequestBuilder ([#1926](https://github.com/coral-xyz/anchor/pull/1926)).
+* client: Add `send_with_spinner_and_config` function to RequestBuilder ([#1926](https://github.com/coral-xyz/anchor/pull/1926)).
 * ts: Implement a coder for SPL associated token program ([#1939](https://github.com/coral-xyz/anchor/pull/1939)).
 * ts: verbose error for missing `ANCHOR_WALLET` variable when using `NodeWallet.local()` ([#1958](https://github.com/coral-xyz/anchor/pull/1958)).
 * ts: Add `MethodsBuilder#accountsStrict` for strict typing on ix account input ([#2019](https://github.com/coral-xyz/anchor/pull/2019)).
