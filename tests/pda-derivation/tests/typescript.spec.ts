@@ -57,7 +57,7 @@ describe("typescript", () => {
     });
 
     const keys = await tx.pubkeys();
-    expect(keys.account.equals(expectedPDAKey)).is.true;
+    expect(keys.account!.equals(expectedPDAKey)).is.true;
 
     await tx.rpc();
 
@@ -77,7 +77,7 @@ describe("typescript", () => {
         if (instruction.name === "initMyAccount") {
           return async ({ accounts }) => {
             called = true;
-            return accounts;
+            return { accounts, resolved: 0 };
           };
         }
       }
