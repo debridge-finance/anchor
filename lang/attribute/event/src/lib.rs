@@ -40,8 +40,12 @@ pub fn event(
         }
 
         impl anchor_lang::Discriminator for #event_name {
-            fn discriminator() -> [u8; 8] {
-                #discriminator
+            const DISCRIMINATOR: [u8; 8] = #discriminator;
+        }
+
+        impl anchor_lang::Owner for #event_name {
+            fn owner() -> anchor_lang::prelude::Pubkey {
+                crate::ID
             }
         }
     })
