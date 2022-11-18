@@ -15,6 +15,7 @@ pub mod counter {
     use super::*;
 
     #[state]
+    #[derive(Debug)]
     pub struct Counter {
         pub count: u64,
         pub auth_program: Pubkey,

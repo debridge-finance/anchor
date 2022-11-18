@@ -16,6 +16,7 @@ mod registry {
     use super::*;
 
     #[state]
+    #[derive(Debug)]
     pub struct Registry {
         pub lockup_program: Pubkey,
     }
@@ -1163,7 +1164,7 @@ pub struct RewardVendor {
     pub kind: RewardVendorKind,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
 pub enum RewardVendorKind {
     Unlocked,
     Locked {

@@ -426,7 +426,7 @@ pub struct MarketAccounts<'info> {
     coin_wallet: AccountInfo<'info>,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize)]
 pub enum Side {
     Bid,
     Ask,

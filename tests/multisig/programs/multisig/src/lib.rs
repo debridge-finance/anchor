@@ -246,7 +246,7 @@ impl From<&Transaction> for Instruction {
     }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct TransactionAccount {
     pubkey: Pubkey,
     is_signer: bool,
