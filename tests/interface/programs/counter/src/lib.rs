@@ -14,6 +14,7 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 pub mod counter {
     use super::*;
 
+    #[derive(Debug)]
     #[state]
     pub struct Counter {
         pub count: u64,

@@ -11,7 +11,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             let ctor_args: Vec<proc_macro2::TokenStream> = generate_ctor_typed_args(state)
                 .iter()
                 .map(|arg| {
-                    format!("pub {}", parser::tts_to_string(arg))
+                    format!("#[derive(Debug)]\npub {}", parser::tts_to_string(arg))
                         .parse()
                         .unwrap()
                 })
@@ -19,12 +19,12 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             let strct = {
                 if ctor_args.is_empty() {
                     quote! {
-                        #[derive(AnchorSerialize, AnchorDeserialize)]
+                        #[derive(Debug, AnchorSerialize, AnchorDeserialize)]
                         pub struct New;
                     }
                 } else {
                     quote! {
-                        #[derive(AnchorSerialize, AnchorDeserialize)]
+                        #[derive(Debug, AnchorSerialize, AnchorDeserialize)]
                         pub struct New {
                             #(#ctor_args),*
                         }
@@ -157,7 +157,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             if ix.args.is_empty() {
                 quote! {
                     /// Instruction.
-                    #[derive(AnchorSerialize, AnchorDeserialize)]
+                    #[derive(Debug, AnchorSerialize, AnchorDeserialize)]
                     pub struct #ix_name_camel;
 
                     #ix_data_trait
@@ -165,7 +165,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             } else {
                 quote! {
                     /// Instruction.
-                    #[derive(AnchorSerialize, AnchorDeserialize)]
+                    #[derive(Debug, AnchorSerialize, AnchorDeserialize)]
                     pub struct #ix_name_camel {
                         #(#raw_args),*
                     }

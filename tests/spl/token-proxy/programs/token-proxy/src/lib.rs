@@ -30,7 +30,7 @@ mod token_proxy {
     }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize)]
+#[derive(Debug, AnchorSerialize, AnchorDeserialize)]
 pub enum AuthorityType {
     /// Authority to mint new tokens
     MintTokens,
