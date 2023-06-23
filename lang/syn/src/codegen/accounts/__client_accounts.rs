@@ -212,7 +212,7 @@ pub fn generate(accs: &AccountsStruct) -> proc_macro2::TokenStream {
             #(#re_exports)*
 
             #struct_doc
-            #[derive(anchor_lang::AnchorSerialize)]
+            #[derive(Debug, anchor_lang::AnchorSerialize)]
             pub struct #name {
                 #(#account_struct_fields),*
             }
