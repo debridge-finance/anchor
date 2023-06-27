@@ -30,7 +30,7 @@ pub fn event(
     };
 
     proc_macro::TokenStream::from(quote! {
-        #[derive(anchor_lang::__private::EventIndex, AnchorSerialize, AnchorDeserialize)]
+        #[derive(anchor_lang::__private::EventIndex, AnchorSerialize, AnchorDeserialize, Debug)]
         #event_strct
 
         impl anchor_lang::Event for #event_name {
