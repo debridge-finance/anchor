@@ -41,7 +41,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             if ix.args.is_empty() {
                 quote! {
                     /// Instruction.
-                    #[derive(AnchorSerialize, AnchorDeserialize)]
+                    #[derive(AnchorSerialize, AnchorDeserialize, Debug)]
                     pub struct #ix_name_camel;
 
                     #ix_data_trait
@@ -49,7 +49,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             } else {
                 quote! {
                     /// Instruction.
-                    #[derive(AnchorSerialize, AnchorDeserialize)]
+                    #[derive(AnchorSerialize, AnchorDeserialize, Debug)]
                     pub struct #ix_name_camel {
                         #(#raw_args),*
                     }
