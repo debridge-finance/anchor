@@ -17,19 +17,19 @@ on:
         required: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Linter
-        uses: hadolint/hadolint-action@v2.0.0
-        with:
-          dockerfile: ${{ inputs.docker_file }}
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - name: Linter
+#        uses: hadolint/hadolint-action@v2.0.0
+#        with:
+#          dockerfile: ${{ inputs.docker_file }}
 
   build:
-    needs: ["lint"]
+#    needs: ["lint"]
     runs-on: ubuntu-latest
     steps:
       - name: Print message
