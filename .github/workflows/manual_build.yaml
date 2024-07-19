@@ -7,7 +7,13 @@ on:
         description: 'solana cli tag'
         required: true
       anchor_rev:
-        description: 'anchor commit'
+        description: 'commit anchor'
+        required: true
+      docker_file:
+        default: "docker/build/Dockerfile"
+        required: true
+      docker_name:
+        default: "anchor-build"
         required: true
 
 jobs:
