@@ -90,7 +90,7 @@ jobs:
           context: ${{ inputs.docker_context }}
           platforms: "linux/x86_64"
           file: ${{ inputs.docker_file }}
-          push: false
+          push: true
           labels: ${{ steps.meta-versioned.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
