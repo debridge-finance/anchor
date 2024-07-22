@@ -83,7 +83,7 @@ jobs:
           images: "debridgefinance/${{ env.IMAGE_NAME }}"
           tags: |
             type=match,pattern=v(.*),prefix=,suffix=
-      #-${{ github.event.inputs.anchor_rev }}
+      #-${{ github.event.inputs.anchor_rev }}${{ github.event.inputs.solana_cli_version }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -92,9 +92,9 @@ jobs:
           file: ${{ inputs.docker_file }}
           push: true
           labels: ${{ steps.meta-versioned.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}"
+#          cache-from: type=gha
+#          cache-to: type=gha,mode=max
+          tags: "debridgefinance/${{ env.IMAGE_NAME }}:sol"
           build-args: |
             SOLANA_CLI=${{ github.event.inputs.solana_cli_version }}
             ANCHOR_REV=${{ github.event.inputs.anchor_rev }}
