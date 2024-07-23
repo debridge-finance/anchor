@@ -47,10 +47,13 @@ jobs:
             echo "IMAGE_NAME=${{ inputs.docker_name }}" >> $GITHUB_ENV
             echo "2"
           fi
-          echo "${{ env.IMAGE_NAME }}"
+          echo "${{ env.IMAGE_NAME }}
+          echo "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}-${{ github.event.inputs.anchor_rev }}"
+
       - name: Debug
         run: |
           echo ${{ env.IMAGE_NAME }}
+   
       - uses: actions/checkout@v4
 
       # Install the cosign tool except on PR
@@ -83,7 +86,7 @@ jobs:
           images: "debridgefinance/${{ env.IMAGE_NAME }}"
           tags: |
             type=match,pattern=v(.*),prefix=,suffix=
-      #-${{ github.event.inputs.anchor_rev }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -94,7 +97,7 @@ jobs:
           labels: ${{ steps.meta-versioned.outputs.labels }}
 #          cache-from: type=gha
 #          cache-to: type=gha,mode=max
-          tags: "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}"
+          tags: "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}-${{ github.event.inputs.anchor_rev }}"
           build-args: |
             SOLANA_CLI=${{ github.event.inputs.solana_cli_version }}
             ANCHOR_REV=${{ github.event.inputs.anchor_rev }}
