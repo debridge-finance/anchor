@@ -279,7 +279,7 @@ pub trait ZeroCopy: Discriminator + Copy + Clone + Zeroable + Pod {}
 pub trait InstructionData: Discriminator + AnchorSerialize {
     fn data(&self) -> Vec<u8> {
         let mut data = Vec::with_capacity(256);
-        data.extend_from_slice(&Self::discriminator());
+        data.extend_from_slice(Self::DISCRIMINATOR);
         self.serialize(&mut data).unwrap();
         data
     }
@@ -290,7 +290,7 @@ pub trait InstructionData: Discriminator + AnchorSerialize {
     /// necessary), and because the data field in `Instruction` expects a `Vec<u8>`.
     fn write_to(&self, mut data: &mut Vec<u8>) {
         data.clear();
-        data.extend_from_slice(&Self::DISCRIMINATOR);
+        data.extend_from_slice(Self::DISCRIMINATOR);
         self.serialize(&mut data).unwrap()
     }
 }
@@ -300,18 +300,10 @@ pub trait Event: AnchorSerialize + AnchorDeserialize + Discriminator {
     fn data(&self) -> Vec<u8>;
 }
 
-// The serialized event data to be emitted via a Solana log.
-// TODO: remove this on the next major version upgrade.
-#[doc(hidden)]
-#[deprecated(since = "0.4.2", note = "Please use Event instead")]
-pub trait EventData: AnchorSerialize + Discriminator {
-    fn data(&self) -> Vec<u8>;
-}
-
 /// 8 byte unique identifier for a type.
 pub trait Discriminator {
-    const DISCRIMINATOR: [u8; 8];
-    fn discriminator() -> [u8; 8] {
+    const DISCRIMINATOR: &'static [u8];
+    fn discriminator() -> &'static [u8] {
         Self::DISCRIMINATOR
     }
 }
@@ -404,8 +396,9 @@ pub mod prelude {
         require_keys_neq, require_neq,
         solana_program::bpf_loader_upgradeable::UpgradeableLoaderState, source,
         system_program::System, zero_copy, AccountDeserialize, AccountSerialize, Accounts,
-        AccountsClose, AccountsExit, AnchorDeserialize, AnchorSerialize, Id, InitSpace, Key,
-        Lamports, Owner, ProgramData, Result, Space, ToAccountInfo, ToAccountInfos, ToAccountMetas,
+        AccountsClose, AccountsExit, AnchorDeserialize, AnchorSerialize, Discriminator, Id,
+        InitSpace, Key, Lamports, Owner, ProgramData, Result, Space, ToAccountInfo, ToAccountInfos,
+        ToAccountMetas,
     };
     pub use anchor_attribute_error::*;
     pub use borsh;
