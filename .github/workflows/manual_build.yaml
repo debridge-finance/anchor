@@ -47,7 +47,6 @@ jobs:
             echo "IMAGE_NAME=${{ inputs.docker_name }}" >> $GITHUB_ENV
             echo "2"
           fi
-          echo "${{ env.IMAGE_NAME }}
 
       - name: Debug
         run: |
