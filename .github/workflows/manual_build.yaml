@@ -48,7 +48,6 @@ jobs:
             echo "2"
           fi
           echo "${{ env.IMAGE_NAME }}
-          echo "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}-${{ github.event.inputs.anchor_rev }}"
 
       - name: Debug
         run: |
