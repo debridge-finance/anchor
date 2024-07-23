@@ -9,18 +9,103 @@ on:
       anchor_rev:
         description: 'commit anchor'
         required: true
+      docker_file:
+        default: "docker/build/Dockerfile"
+        required: true
+      docker_name:
+        default: "anchor-build"
+        required: true
 
 jobs:
-  docker:
-    uses: debridge-finance/pipelines/.github/workflows/tmpl-docker-anchor.yml@main
-    with:
-      message: "Triggered from another repository"
-      docker_file: "docker/build/Dockerfile"
-      docker_name: "anchor-build"
-    secrets: inherit
-    permissions:
-      contents: read
-      packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#
+#      - name: Linter
+#        uses: hadolint/hadolint-action@v2.0.0
+#        with:
+#          dockerfile: ${{ inputs.docker_file }}
+
+  build:
+#    needs: ["lint"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print message
+        run: |
+          echo "${{ github.event_name }}"
+          echo "Message: ${{ inputs.message }}"
+          echo "docker file: ${{ inputs.docker_file }}"
+          echo "docker context: ${{ inputs.docker_context }}"
+          echo "docker name: ${{ inputs.docker_name }}"
+          if [ "${{ inputs.docker_name }}" == "" ]
+          then
+            echo "IMAGE_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+            echo "1"
+          else
+            echo "IMAGE_NAME=${{ inputs.docker_name }}" >> $GITHUB_ENV
+            echo "2"
+          fi
+
+      - name: Debug
+        run: |
+          echo ${{ env.IMAGE_NAME }}
+   
+      - uses: actions/checkout@v4
+
+      # Install the cosign tool except on PR
+      # https://github.com/sigstore/cosign-installer
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@6e04d228eb30da1757ee4e1dd75a0ec73a653e06 #v3.1.1
+        with:
+          cosign-release: 'v2.1.1'
+
+      # Set up BuildKit Docker container builder to be able to build
+      # multi-platform images and export cache
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          #registry: ${{ env.REGISTRY }}
+
+      - name: Generate Docker metadata
+        id: meta-versioned
+        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        with:
+          images: "debridgefinance/${{ env.IMAGE_NAME }}"
+          tags: |
+            type=match,pattern=v(.*),prefix=,suffix=
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ inputs.docker_context }}
+          platforms: "linux/x86_64"
+          file: ${{ inputs.docker_file }}
+          push: true
+          labels: ${{ steps.meta-versioned.outputs.labels }}
+#          cache-from: type=gha
+#          cache-to: type=gha,mode=max
+          tags: "debridgefinance/${{ env.IMAGE_NAME }}:sol-${{ github.event.inputs.solana_cli_version }}-${{ github.event.inputs.anchor_rev }}"
+          build-args: |
+            SOLANA_CLI=${{ github.event.inputs.solana_cli_version }}
+            ANCHOR_REV=${{ github.event.inputs.anchor_rev }}
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+#      - name: Log into registry ${{ env.REGISTRY }}
+#        if: github.event_name != 'pull_request'
+#        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+#        with:
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+
