@@ -12,7 +12,8 @@ ARG SOLANA_CLI
 ARG ANCHOR_REV
 ARG NODE_VERSION="v18.18.0"
 
-ENV HOME="/root"
+RUN mkdir -p "/github/home"
+ENV HOME="/github/home"
 ENV PATH="${HOME}/.cargo/bin:${PATH}"
 ENV PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
 ENV PATH="${HOME}/.nvm/versions/node/${NODE_VERSION}/bin:${PATH}"
