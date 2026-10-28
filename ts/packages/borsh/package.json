@@ -20,7 +20,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "bn.js": "^5.1.2",
+    "bn.js": "^5.2.3",
     "buffer-layout": "^1.2.0"
   },
   "peerDependencies": {
