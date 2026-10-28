@@ -55,7 +55,7 @@
     "@project-serum/common": "^0.0.1-beta.3",
     "@project-serum/serum": "^0.13.60",
     "@solana/spl-token": "^0.1.8",
-    "@solana/web3.js": "^1.68.0"
+    "@solana/web3.js": "^3.1.1"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.1",
